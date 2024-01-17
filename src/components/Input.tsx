@@ -2,7 +2,7 @@ type InputProps = {
   name: string;
   value?: string;
   type?: string;
-  onChange?: (e: React.InputHTMLAttributes<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   disabled?: boolean;
@@ -21,7 +21,7 @@ const Input = ({
     <input
       type={type}
       value={value}
-      onChange={onChange} 
+      onChange={onChange}
       onKeyDown={onKeyDown}
       placeholder={`Enter ${name}`}
       disabled={disabled}
