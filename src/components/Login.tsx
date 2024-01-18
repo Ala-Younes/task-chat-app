@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
+import { firestore_SignUp } from "../backend/queries";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,32 +11,37 @@ const Login = () => {
     password: "",
     confirmPassword: "",
   };
-
   const [formData, setFormData] = useState(initialFormState);
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleLoginClick = () => {
-    const loginData = { email: formData.email, password: formData.password };
+  const handleLogin = () => {
+    const { email, password } = formData;
+    const loginData = { email, password };
     console.log("%c LoginData : ", "color: green", loginData);
   };
 
-  const handleRegisterClick = () => {
-    const registerData = {
-      email: formData.email,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-    };
-    console.log("%c RegisterData : ", "color: green", registerData);
+  const handleRegister = () => {
+    firestore_SignUp(formData);
   };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // ! if i handle login and register here depending on isLogin value they well be triggered directly
+    // ! because isLogin is already changed ...
+  };
+
   return (
     <div className="w-full md:w-[450px]">
       <h1 className="text-white text-center font-bold text-4xl md:text-6xl mb-10">
         {isLogin ? "Login" : "Register"}
       </h1>
-      <form className="flex flex-col gap-3 bg-white p-6 min-h-[150px] w-full rounded-xl drop-shadow-xl">
+      <form
+        onSubmit={(e) => handleSubmit(e)}
+        className="flex flex-col gap-3 bg-white p-6 min-h-[150px] w-full rounded-xl drop-shadow-xl"
+      >
         <Input
           name="email"
           type="email"
@@ -60,7 +66,7 @@ const Login = () => {
         )}
         {isLogin ? (
           <>
-            <Button text="Login" onClick={handleLoginClick} />
+            <Button text="Login" onClick={handleLogin} />
             <Button
               loading={false}
               text="Register"
@@ -70,7 +76,7 @@ const Login = () => {
           </>
         ) : (
           <>
-            <Button text="Register" onClick={handleRegisterClick} />
+            <Button text="Register" onClick={handleRegister} />
             <Button text="Login" onClick={() => setIsLogin(true)} secondary />
           </>
         )}
