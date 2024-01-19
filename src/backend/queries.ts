@@ -211,4 +211,4 @@ const getStorageUser = () => {
   }
 };
 
-export { firestore_SignUp, firestore_SignIn, firestore_SignOut };
+export { firestore_SignUp, firestore_SignIn, firestore_SignOut, getStorageUser };

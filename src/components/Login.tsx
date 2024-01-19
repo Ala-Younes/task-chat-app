@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
-import { firestore_SignIn, firestore_SignUp } from "../backend/queries";
+import {
+  firestore_SignIn,
+  firestore_SignUp,
+  getStorageUser,
+} from "../backend/queries";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../redux/store";
 import { registerType } from "../types/types";
+import { setUser } from "../redux/userSlice";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -58,6 +63,19 @@ const Login = () => {
   const resetForm = () => {
     setFormData({ email: "", password: "", confirmPassword: "" });
   };
+
+  const currentUserFromLS = getStorageUser();
+  // ! For routes protecting we are using useEffect ...
+  // ! Data Persistency => shit we are taking from store to LS and than from LS to store Nice :)
+  // ! because localStorage is persisted until we logout 
+  // ! maybe we can set a connection time (4h, remember me : 2 days)
+  useEffect(() => {
+    if (currentUserFromLS?.id) {
+      dispatch(setUser(currentUserFromLS));
+      navigateTo("/dashboard");
+    }
+  }, [currentUserFromLS, dispatch, navigateTo]);
+
   return (
     <div className="w-full md:w-[450px]">
       <h1 className="text-white text-center font-bold text-4xl md:text-6xl mb-10">
