@@ -1,6 +1,9 @@
 type Props = {};
+import { BsFillChatFill } from "react-icons/bs";
 import logo from "../assets/logo.png";
-import Button from "./Button";
+import AddListBoard from "./AddListBoard";
+import Icon from "./Icon";
+import { FiList } from "react-icons/fi";
 
 const Header = ({}: Props) => {
   return (
@@ -10,22 +13,10 @@ const Header = ({}: Props) => {
         src={logo}
         alt="logo"
       />
-      <div className="flex flex-row-reverse md:flex-row items-center justify-center gap-5 flex-wrap">
-        <Button text="Add New ListBoard" />
-        {/* <div className="group relative">
-          <div className="absolute pt-5 hidden group-hover:block w-full min-w-max">
-            <ul className="w-full bg-white overflow-hidden rounded-md shadow-md text-gray-700 pt-1">
-              <p className="hover:bg-gray-200 py-2 px-4 block cursor-pointer">
-                Profile
-              </p>
-              <button
-                className={`hover:bg-gray-200 w-full py-2 px-4 cursor-pointer flex items-center gap-4`}
-              >
-                Logout
-              </button>
-            </ul>
-          </div>
-        </div> */}
+      <div className="flex flex-wrap flex-row-reverse md:flex-row items-center justify-center gap-5">
+        <AddListBoard />
+        <Icon IconName={BsFillChatFill} reduceOpacityOnHover={false} ping />
+        <Icon IconName={FiList} reduceOpacityOnHover={false} />
       </div>
     </div>
   );
