@@ -1,7 +1,11 @@
 import { useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
-import { firestore_SignUp } from "../backend/queries";
+import { firestore_SignIn, firestore_SignUp } from "../backend/queries";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../redux/store";
+import { registerType } from "../types/types";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,19 +16,37 @@ const Login = () => {
     confirmPassword: "",
   };
   const [formData, setFormData] = useState(initialFormState);
+  // ! Maybe a hook to return result, error, loading from firebase
+  // ! A useFirebaseLogin, a useFirebaseSignUp
+  const [isLoading, setIsLoading] = useState({
+    signUp: false,
+    signIn: false,
+  });
+
+  const navigateTo = useNavigate();
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const handleAuthentication = (
+    authData: Partial<registerType>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actionFunction: any
+  ) => {
+    actionFunction(authData, setIsLoading, resetForm, navigateTo, dispatch);
+  };
+
   const handleLogin = () => {
     const { email, password } = formData;
     const loginData = { email, password };
-    console.log("%c LoginData : ", "color: green", loginData);
+    handleAuthentication(loginData, firestore_SignIn);
   };
 
   const handleRegister = () => {
-    firestore_SignUp(formData);
+    handleAuthentication(formData, firestore_SignUp);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,6 +55,9 @@ const Login = () => {
     // ! because isLogin is already changed ...
   };
 
+  const resetForm = () => {
+    setFormData({ email: "", password: "", confirmPassword: "" });
+  };
   return (
     <div className="w-full md:w-[450px]">
       <h1 className="text-white text-center font-bold text-4xl md:text-6xl mb-10">
@@ -66,7 +91,11 @@ const Login = () => {
         )}
         {isLogin ? (
           <>
-            <Button text="Login" onClick={handleLogin} />
+            <Button
+              text="Login"
+              onClick={handleLogin}
+              loading={isLoading.signIn}
+            />
             <Button
               loading={false}
               text="Register"
@@ -76,7 +105,11 @@ const Login = () => {
           </>
         ) : (
           <>
-            <Button text="Register" onClick={handleRegister} />
+            <Button
+              text="Register"
+              onClick={handleRegister}
+              loading={isLoading.signUp}
+            />
             <Button text="Login" onClick={() => setIsLogin(true)} secondary />
           </>
         )}

@@ -15,7 +15,7 @@ const CatchErr = (err: { code?: string; name?: string }) => {
     toastInfo(`${name} : logout and login before updating your profile`);
   else if (code === "unavailable")
     toastErr(`${name} : firebase client is offline`);
-  else if (code === "auth/invalid-login-credentials")
+  else if (code === "auth/invalid-credential")
     toastErr(`${name} : invalid credentials`);
   else if (code === `${name} : auth/operation-not-allowed`)
     toastErr(`${name} : Can't change email now!`);
