@@ -12,7 +12,13 @@ import {
   userType,
 } from "../types/types";
 import { NavigateFunction } from "react-router-dom";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { defaultUser, setUser } from "../redux/userSlice";
 import { AppDispatch } from "../redux/store";
 import { ConvertTime } from "../utils/convertTime";
@@ -85,6 +91,11 @@ const firestore_SignIn = (
   signInWithEmailAndPassword(auth, email, password)
     .then(async ({ user }) => {
       // ! Update user isOnline property
+      await updateUserInfos({
+        id: user.uid,
+        isOnline: true,
+      });
+
       // ! get user Info
       const userInfo = await getUserInfo(user.uid);
       // ! Set user info in the store and localStorage
@@ -147,4 +158,35 @@ const getUserInfo = async (uid: string): Promise<userType> => {
   }
 };
 
+const updateUserInfos = async ({
+  name,
+  img,
+  isOnline,
+  isOffline,
+  id,
+}: Partial<userType>) => {
+  if (!id) {
+    id = getStorageUser().id;
+  } else {
+    await updateDoc(doc(db, databaseCollections.users, id), {
+      ...(name && { name }),
+      ...(isOnline && { isOnline }),
+      ...(isOffline && { isOffline }),
+      ...(img && { img }),
+      lastSeen: serverTimestamp(),
+    });
+  }
+};
+
+// ! this is .... (i we have the user in the store why use localStorage)
+// ! No very typescript getStorageUser().id (id ????)
+
+const getStorageUser = () => {
+  const user = localStorage.getItem("chat_app_user");
+  if (user) {
+    return JSON.parse(user);
+  } else {
+    return null;
+  }
+};
 export { firestore_SignUp, firestore_SignIn };

@@ -28,7 +28,9 @@ export const userSlice = createSlice({
     setUser: (state, action) => {
       console.log(action);
 
-      // set logged user 
+      // set logged user in both store and local storage
+      // * local storage
+      localStorage.setItem("chat_app_user", JSON.stringify(action.payload));
       // ! We dispatched the setUser method with the values that we want to put on it
       state.currentUser = action.payload;
     },
