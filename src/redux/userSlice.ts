@@ -32,6 +32,7 @@ export const userSlice = createSlice({
       // * local storage
       localStorage.setItem("chat_app_user", JSON.stringify(action.payload));
       // ! We dispatched the setUser method with the values that we want to put on it
+      // ! dispatch causes changes to the store
       state.currentUser = action.payload;
     },
     setUsers: (state, action) => {

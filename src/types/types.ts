@@ -22,4 +22,12 @@ type userType = {
   creationTime?: string;
   lastSeen?: string;
 };
-export type { setLoadingType, registerType, loginType, userType };
+
+type updateUserType = Partial<userType> & { isOffline?: boolean };
+export type {
+  setLoadingType,
+  registerType,
+  loginType,
+  userType,
+  updateUserType,
+};

@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { toastErr } from "../utils/toast";
@@ -9,6 +10,7 @@ import {
   loginType,
   registerType,
   setLoadingType,
+  updateUserType,
   userType,
 } from "../types/types";
 import { NavigateFunction } from "react-router-dom";
@@ -111,6 +113,24 @@ const firestore_SignIn = (
     });
 };
 
+const firestore_SignOut = (
+  dispatch: AppDispatch,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  setLoading(true);
+  signOut(auth)
+    .then(async () => {
+      await updateUserInfos({ isOnline: false, isOffline: true });
+      // set the user in  the state to empty
+      dispatch(setUser(defaultUser));
+
+      // Remove data from local storage
+      localStorage.removeItem("chat_app_user");
+      setLoading(false);
+    })
+    .catch((err) => console.log("%c Err update info : ", "color: red", err));
+};
+
 const addUserToCollection = async (
   userId: string,
   userEmail: string,
@@ -164,10 +184,12 @@ const updateUserInfos = async ({
   isOnline,
   isOffline,
   id,
-}: Partial<userType>) => {
+}: updateUserType) => {
   if (!id) {
     id = getStorageUser().id;
-  } else {
+  }
+  if (id) {
+    console.log("%c IsOnline : ", "color: green", isOnline);
     await updateDoc(doc(db, databaseCollections.users, id), {
       ...(name && { name }),
       ...(isOnline && { isOnline }),
@@ -180,7 +202,6 @@ const updateUserInfos = async ({
 
 // ! this is .... (i we have the user in the store why use localStorage)
 // ! No very typescript getStorageUser().id (id ????)
-
 const getStorageUser = () => {
   const user = localStorage.getItem("chat_app_user");
   if (user) {
@@ -189,4 +210,5 @@ const getStorageUser = () => {
     return null;
   }
 };
-export { firestore_SignUp, firestore_SignIn };
+
+export { firestore_SignUp, firestore_SignIn, firestore_SignOut };
